@@ -1,10 +1,10 @@
-from random import randint
-from random import choice
+import random
 import os
+
 
 def cli():
     while True:
-        choice(games)()
+        random.choice(games)()
         try:
             assert input("\n\nDo you want to play again? \n\n")[0].lower() == "y"
         except:
@@ -13,19 +13,22 @@ def cli():
 
 
 def guess():
-    x=randint(0,9)
+    x=random.randint(0,9)
     while True:
+        print(f"\nGuess the number between 0 and 9. ")
         try:
-            guess=int(input(f"\nGuess the number between 0 and 9. "))
             assert guess==x
-        except:
+        except NameError:
+            guess = int(input())
+        except AssertionError:
             if guess>x:
                 print(f"\n{guess} is too high! Guess again. ")
-            else:
+            elif guess<x:
                 print(f"\n{guess} is too low! Guess again. ")
-            continue
-        print(f"\nCorrect! The number is {x}. ")
-        break
+            del guess
+        else:
+            print(f"\nCorrect! The number is {x}. ")
+            break
 
 
 def name():
@@ -34,7 +37,7 @@ def name():
 
 
 def add():
-    x,y=randint(0,5),randint(0,5)
+    x,y=random.randint(0,5),random.randint(0,5)
     while True:
         try:
             assert int(input(f"\nWhat is {x}+{y}? "))==x+y
@@ -47,23 +50,29 @@ def add():
 
 def hangman():
     chance = 10
-    word = choice(words)
+    word = random.choice(words)
+    remain = list(word)
     board = len(word) * ["_"]
     while chance:
-        if "".join(board) == word:
-            print("\n\nYOU WIN!!!\n\n")
-            break
         print(f"You have {chance} chances left to guess the word:\n")
         print(f"{' '.join(board)}\n\n")
+        if "".join(board) == word:
+            print("\n\nYOU WIN!!!\n\n")
+            return 1
         guess = input("Guess a letter: ")
-        if guess in word:
-            board[word.index(guess)] = guess
-        else:
+        if guess and guess in remain:
+            guess_idx = remain.index(guess)
+            board[guess_idx] = guess
+            remain[guess_idx] = " "
+        elif guess:
             chance -= 1
             input(f"Sorry! '{guess}' is not in the word.")
+        else:
+            pass
         os.system("cls")
     else:
         print(f"That was your last chance. The word is '{word}'.\n\nGame Over")
+        return 0
 
 
 words = """
